@@ -21,84 +21,77 @@ Before running the backend, make sure you have the following dependencies instal
 
 1. Clone the repository:
 
-   ```bash
+   ```
    git clone https://github.com/your-username/myticket-backend.git
-Navigate to the backend directory:
+   ```
+#### Navigate to the backend directory:
 
-bash
-Copy code
-cd myticket-backend
-Install the dependencies:
+```
+cd server
+```
+#### Install the dependencies:
 
-bash
-Copy code
+```
 npm install
-Set up the database connection:
-
+```
+#### Set up the database connection:
 Create a new PostgreSQL database for MyTicket.
 Update the database connection details in the ormconfig.json file.
-Run the database migrations:
 
-bash
-Copy code
+#### Run the database migrations:
+
+```
 npm run typeorm:migrate
-💻 Frontend Installation
+```
+### 💻 Frontend Installation
 Clone the repository:
-
-bash
-Copy code
+```
 git clone https://github.com/your-username/myticket-frontend.git
+```
 Navigate to the frontend directory:
-
-bash
-Copy code
+```
 cd myticket-frontend
+```
 Install the dependencies:
 
-bash
-Copy code
+```
 npm install
-🎯 Usage
+```
+### 🎯 Usage
 Backend
 Start the backend server:
 
-bash
-Copy code
+```
 npm run start:dev
-The backend API will be available at http://localhost:3000.
+```
+The backend API will be available at http://localhost:3000/api/v1.
 
 Frontend
 Start the frontend development server:
 
-bash
-Copy code
+```
 npm run dev
+```
 The frontend application will be available at http://localhost:4000.
 
-🌱 Seeding the Database
+### 🌱 Seeding the Database
 To quickly populate the database with dummy data for testing and development, you can use the provided seed script.
 
 Make sure the backend server is running.
 
 Navigate to the backend directory:
-
-bash
-Copy code
+```
 cd myticket-backend
+```
 Run the seed script:
-
-bash
-Copy code
+```bash
 ./seed_db.sh
+```
 This script will add dummy events and tickets to the database.
 
-🤝 Contributing
+### 🤝 Contributing
 Contributions are welcome! If you encounter any issues or have suggestions for improvements, please create an issue or submit a pull request.
 
-📝 License
+### 📝 License
 This project is licensed under the MIT License.
 
-vbnet
-Copy code
-
-Feel free to further customize the README by adding or modifying the content as needed.
