@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { Event } from '../../event/entities/event.entity';
 
 @Entity()
@@ -7,11 +7,17 @@ export class Ticket {
   id: number;
 
   @Column()
-  date: Date;
+  name: string;
 
   @Column()
-  code: string;
+  price: number;
+  //make it default to date now
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  // @Column({ type: 'timestamp' })
+  date: Date;
 
   @ManyToOne(() => Event, (event) => event.tickets)
+  @JoinColumn({ name: 'eventId' })
   event: Event;
 }
+
