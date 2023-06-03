@@ -26,8 +26,8 @@ for ((i=1; i<=6; i++)); do
     TICKET_NAME="Ticket $i-$j"
     TICKET_PRICE=$((10 + i + j))
 
-    TICKET_DATA="{\"name\": \"$TICKET_NAME\", \"price\": $TICKET_PRICE, \"eventId\": $i}"
-    sendPostRequest "$BASE_URL/ticket" "$TICKET_DATA"
+    TICKET_DATA="{\"name\": \"$TICKET_NAME\", \"price\": $TICKET_PRICE}"
+    sendPostRequest "$BASE_URL/$i/ticket" "$TICKET_DATA"
   done
 done
 

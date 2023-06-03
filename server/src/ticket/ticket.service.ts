@@ -3,15 +3,20 @@ import { EntityManager } from 'typeorm';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
 import { Ticket } from './entities/ticket.entity';
+import { EventService } from 'src/event/event.service';
 
 @Injectable()
 export class TicketService {
-  constructor(private readonly entityManager: EntityManager) {}
+  constructor(
+    private readonly entityManager: EntityManager,
+    private readonly eventService: EventService,
+  ) {}
 
   async create(
     eventId: string,
     createTicketDto: CreateTicketDto,
   ): Promise<Ticket> {
+    createTicketDto.eventId = eventId;
     const ticket = this.entityManager.create(Ticket, {
       ...createTicketDto,
     });
@@ -22,9 +27,14 @@ export class TicketService {
     return await this.entityManager.find(Ticket);
   }
   async findAllByEvent(eventId: string): Promise<Ticket[]> {
-    return await this.entityManager.find(Ticket, {
-      where: { id: eventId },
-    });
+    await this.eventService.findOne(+eventId);
+    const query = this.entityManager.createQueryBuilder(Ticket, 'ticket');
+    query.where('ticket.eventId = :eventId', { eventId });
+    return query.getMany();
+
+    // return await this.entityManager.findBy(Ticket, {
+    //   eventId: eventId,
+    // });
   }
 
   async findOne(id: number): Promise<Ticket> {
@@ -40,6 +50,8 @@ export class TicketService {
   }
 
   async remove(id: number): Promise<void> {
+    await this.findOne(id);
+
     await this.entityManager.delete(Ticket, id);
   }
 }
