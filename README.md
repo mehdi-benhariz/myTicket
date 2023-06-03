@@ -81,7 +81,7 @@ Make sure the backend server is running.
 
 Navigate to the backend directory:
 ```
-cd myticket-backend
+cd server
 ```
 Run the seed script:
 ```bash
