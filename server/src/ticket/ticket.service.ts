@@ -14,7 +14,6 @@ export class TicketService {
   ): Promise<Ticket> {
     const ticket = this.entityManager.create(Ticket, {
       ...createTicketDto,
-      event: { id: eventId },
     });
     return await this.entityManager.save(Ticket, ticket);
   }

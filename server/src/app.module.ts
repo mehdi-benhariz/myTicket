@@ -8,6 +8,7 @@ import { Ticket } from './ticket/entities/ticket.entity';
 import { Event } from './event/entities/event.entity';
 import { DataSource } from 'typeorm';
 import { DatabaseModule } from './database/database.module';
+import { UserModule } from './user/user.module';
 @Module({
   imports: [
     // TypeOrmModule.forRoot({
@@ -26,6 +27,7 @@ import { DatabaseModule } from './database/database.module';
     DatabaseModule,
     EventModule,
     TicketModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],
