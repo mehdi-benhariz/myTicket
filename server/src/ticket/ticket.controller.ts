@@ -15,23 +15,18 @@ import { EventService } from 'src/event/event.service';
 
 @Controller(':eventId/ticket')
 export class TicketController {
-  constructor(
-    private readonly ticketService: TicketService,
-    private readonly eventService: EventService,
-  ) {}
+  constructor(private readonly ticketService: TicketService) {}
 
   @Post()
   create(
     @Param('eventId') eventId: string,
     @Body() createTicketDto: CreateTicketDto,
   ) {
-    this.eventService.findOne(+eventId);
     return this.ticketService.create(eventId, createTicketDto);
   }
 
   @Get()
   findAll(@Query('eventId') eventId?: string) {
-    this.eventService.findOne(+eventId);
     if (eventId) return this.ticketService.findAllByEvent(eventId);
     else return this.ticketService.findAll();
   }

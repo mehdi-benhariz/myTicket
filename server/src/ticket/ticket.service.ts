@@ -16,6 +16,7 @@ export class TicketService {
     eventId: string,
     createTicketDto: CreateTicketDto,
   ): Promise<Ticket> {
+    createTicketDto.eventId = eventId;
     const ticket = this.entityManager.create(Ticket, {
       ...createTicketDto,
     });
@@ -26,7 +27,7 @@ export class TicketService {
     return await this.entityManager.find(Ticket);
   }
   async findAllByEvent(eventId: string): Promise<Ticket[]> {
-    // const event = await this.eventService.findOne(+eventId);
+    await this.eventService.findOne(+eventId);
     const query = this.entityManager.createQueryBuilder(Ticket, 'ticket');
     query.where('ticket.eventId = :eventId', { eventId });
     return query.getMany();
@@ -49,6 +50,8 @@ export class TicketService {
   }
 
   async remove(id: number): Promise<void> {
+    await this.findOne(id);
+
     await this.entityManager.delete(Ticket, id);
   }
 }

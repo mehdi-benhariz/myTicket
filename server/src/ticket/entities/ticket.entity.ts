@@ -6,14 +6,12 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { Event } from '../../event/entities/event.entity';
+import { User } from 'src/user/entities/user.entity';
 
 @Entity()
 export class Ticket {
   @PrimaryGeneratedColumn()
   id: number;
-
-  @Column()
-  name: string;
 
   @Column()
   price: number;
@@ -25,4 +23,11 @@ export class Ticket {
   @ManyToOne(() => Event, (event) => event.tickets)
   @JoinColumn({ name: 'eventId' })
   event: Event;
+  @Column()
+  eventId: string;
+  // @ManyToOne(() => User, (user) => user.tickets)
+  // @JoinColumn({ name: 'userId' })
+  // owner: User;
+  // @Column()
+  // userId: string;
 }
