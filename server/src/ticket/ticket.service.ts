@@ -8,17 +8,28 @@ import { Ticket } from './entities/ticket.entity';
 export class TicketService {
   constructor(private readonly entityManager: EntityManager) {}
 
-  async create(createTicketDto: CreateTicketDto): Promise<Ticket> {
-    const ticket = this.entityManager.create(Ticket, createTicketDto);
+  async create(
+    eventId: string,
+    createTicketDto: CreateTicketDto,
+  ): Promise<Ticket> {
+    const ticket = this.entityManager.create(Ticket, {
+      ...createTicketDto,
+      event: { id: eventId },
+    });
     return await this.entityManager.save(Ticket, ticket);
   }
 
   async findAll(): Promise<Ticket[]> {
     return await this.entityManager.find(Ticket);
   }
+  async findAllByEvent(eventId: string): Promise<Ticket[]> {
+    return await this.entityManager.find(Ticket, {
+      where: { id: eventId },
+    });
+  }
 
   async findOne(id: number): Promise<Ticket> {
-    const ticket = await this.entityManager.findOneBy(Ticket, {id});
+    const ticket = await this.entityManager.findOne(Ticket, { where: { id } });
     if (!ticket) throw new NotFoundException(`Ticket with ID ${id} not found`);
     return ticket;
   }
