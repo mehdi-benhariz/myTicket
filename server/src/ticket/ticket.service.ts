@@ -3,10 +3,14 @@ import { EntityManager } from 'typeorm';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
 import { Ticket } from './entities/ticket.entity';
+import { EventService } from 'src/event/event.service';
 
 @Injectable()
 export class TicketService {
-  constructor(private readonly entityManager: EntityManager) {}
+  constructor(
+    private readonly entityManager: EntityManager,
+    private readonly eventService: EventService,
+  ) {}
 
   async create(
     eventId: string,
@@ -22,9 +26,14 @@ export class TicketService {
     return await this.entityManager.find(Ticket);
   }
   async findAllByEvent(eventId: string): Promise<Ticket[]> {
-    return await this.entityManager.find(Ticket, {
-      where: { id: eventId },
-    });
+    // const event = await this.eventService.findOne(+eventId);
+    const query = this.entityManager.createQueryBuilder(Ticket, 'ticket');
+    query.where('ticket.eventId = :eventId', { eventId });
+    return query.getMany();
+
+    // return await this.entityManager.findBy(Ticket, {
+    //   eventId: eventId,
+    // });
   }
 
   async findOne(id: number): Promise<Ticket> {

@@ -4,7 +4,6 @@ import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 import { Event } from './entities/event.entity';
 
-
 //there's a problem when using the repository, so we use the entityManager instead
 @Injectable()
 export class EventService {
@@ -20,7 +19,7 @@ export class EventService {
   }
 
   async findOne(id: number): Promise<Event> {
-    const event = await this.entityManager.findOneBy(Event, {id});
+    const event = await this.entityManager.findOneBy(Event, { id });
     if (!event) throw new NotFoundException(`Event with ID ${id} not found`);
     return event;
   }

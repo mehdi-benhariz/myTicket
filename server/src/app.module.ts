@@ -10,29 +10,10 @@ import { DataSource } from 'typeorm';
 import { DatabaseModule } from './database/database.module';
 import { UserModule } from './user/user.module';
 @Module({
-  imports: [
-    // TypeOrmModule.forRoot({
-    //   type: 'postgres',
-    //   host: 'localhost',
-    //   port: 5432,
-    //   username: 'mehdi',
-    //   password: 'M1e2h3d4i5',
-    //   database: 'myticket_db',
-    //   entities: [Event, Ticket],
-    //   // entities: [__dirname + '/../**/*.entity.js'],
-    //   synchronize: true,
-    //   autoLoadEntities: true,
-    //   // logging: true,
-    // }),
-    DatabaseModule,
-    EventModule,
-    TicketModule,
-    UserModule,
-  ],
+  imports: [DatabaseModule, EventModule, TicketModule, UserModule],
   controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {
   constructor(private dataSource: DataSource) {}
-
 }
