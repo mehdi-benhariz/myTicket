@@ -13,6 +13,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserAuthService } from './user-auth.service';
 import { LocalAuthGuard } from './local-auth.guard';
+import { log } from 'console';
+import { LoginUserDto } from './dto/login-user.dto';
 
 @Controller('user')
 export class UserController {
@@ -45,9 +47,17 @@ export class UserController {
   remove(@Param('id') id: string) {
     return this.userService.remove(+id);
   }
-  @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(req) {
-    return this.UserAuthService.login(req.user);
+  async login(@Body() loginUserDto: LoginUserDto) {
+    return await this.UserAuthService.login(loginUserDto);
+  }
+  @Post('register')
+  async register(@Body() createUserDto: CreateUserDto) {
+    return this.UserAuthService.register(createUserDto);
+  }
+  @UseGuards(LocalAuthGuard)
+  @Post('logout')
+  async logout(req) {
+    return this.UserAuthService.logout(req.user);
   }
 }

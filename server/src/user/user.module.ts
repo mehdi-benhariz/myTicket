@@ -10,8 +10,8 @@ import { UserService } from './user.service';
   imports: [
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
-      secret: 'your-secret-key',
-      signOptions: { expiresIn: '24h' },
+      secret: 'sussybaka',
+      signOptions: { expiresIn: '1h' },
     }),
   ],
   controllers: [UserController],

@@ -1,14 +1,22 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { User } from './entities/user.entity';
+import { EntityManager } from 'typeorm';
 
 @Injectable()
 export class UserService {
-  findByEmail(email: string) {
-    throw new Error('Method not implemented.');
+  constructor(private readonly entityManager: EntityManager) {}
+
+  async findByEmail(email: string): Promise<User> | null {
+    const user = await this.entityManager.findOneBy(User, { email });
+    if (!user)
+      throw new NotFoundException(`User with email ${email} not found`);
+    return user;
   }
   create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+    const user = this.entityManager.create(User, createUserDto);
+    return this.entityManager.save(User, user);
   }
 
   findAll() {
