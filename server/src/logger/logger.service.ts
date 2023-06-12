@@ -8,6 +8,7 @@ export class LoggerService extends PinoLogger {
   }
 
   public log(...args: any[]): void {
+    console.log('we are in log');
     super.info(args);
   }
 }

@@ -10,7 +10,7 @@ import { PassportLocalService } from 'passport-local';
 @Injectable()
 export class UserAuthService {
   logout(user: any) {
-    throw new Error('Method not implemented.');
+    return 'logout';
   }
 
   constructor(
@@ -49,9 +49,7 @@ export class UserAuthService {
     const user = await this.userService.findByEmail(email);
 
     // If no user was found, return null (invalid credentials)
-    if (!user) {
-      return null;
-    }
+    if (!user) return null;
 
     // Check if the given password matches the hash stored in the database
     const isPasswordValid = await this.validatePassword(
