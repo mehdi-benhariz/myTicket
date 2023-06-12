@@ -15,7 +15,8 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UserAuthService } from './user-auth.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { PassportAuthGuard } from './local-auth.guard';
+import { PassportAuthGuard } from '../guards/local-auth.guard';
+import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 
 @Controller('user')
 export class UserController {
@@ -60,5 +61,12 @@ export class UserController {
   @Post('logout')
   async logout(@Request() req) {
     return this.UserAuthService.logout(req.user);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('profile')
+  async test(@Request() req) {
+    console.log(req.user);
+    return req.user;
   }
 }

@@ -54,9 +54,7 @@ export class UserAuthService {
     );
 
     // If the password is invalid, return null
-    if (!isPasswordValid) {
-      return null;
-    }
+    if (!isPasswordValid) return null;
 
     // If the password is valid, return the user object
     return user;
