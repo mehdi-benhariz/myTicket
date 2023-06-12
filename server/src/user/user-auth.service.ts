@@ -9,10 +9,6 @@ import { PassportLocalService } from 'passport-local';
 
 @Injectable()
 export class UserAuthService {
-  logout(user: any) {
-    return 'logout';
-  }
-
   constructor(
     private readonly userService: UserService,
     private readonly jwtService: JwtService, // private readonly PassportLocalService: PassportLocalService,
@@ -47,7 +43,7 @@ export class UserAuthService {
   async validateUser(email: string, password: string): Promise<User> | null {
     // Get the user with the given email
     const user = await this.userService.findByEmail(email);
-
+    console.log(user);
     // If no user was found, return null (invalid credentials)
     if (!user) return null;
 
@@ -72,5 +68,8 @@ export class UserAuthService {
   ): Promise<boolean> {
     const isPasswordValid = await compare(password, hashedPassword);
     return isPasswordValid;
+  }
+  async logout(user: any) {
+    return user;
   }
 }

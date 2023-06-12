@@ -7,13 +7,15 @@ import {
   Param,
   Delete,
   UseGuards,
+  Request,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserAuthService } from './user-auth.service';
-import { LocalAuthGuard } from './local-auth.guard';
 import { LoginUserDto } from './dto/login-user.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { PassportAuthGuard } from './local-auth.guard';
 
 @Controller('user')
 export class UserController {
@@ -54,9 +56,9 @@ export class UserController {
   async register(@Body() createUserDto: CreateUserDto) {
     return this.UserAuthService.register(createUserDto);
   }
-  @UseGuards(LocalAuthGuard)
+  @UseGuards(PassportAuthGuard)
   @Post('logout')
-  async logout(req) {
+  async logout(@Request() req) {
     return this.UserAuthService.logout(req.user);
   }
 }
