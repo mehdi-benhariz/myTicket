@@ -11,13 +11,25 @@ import { DatabaseModule } from './database/database.module';
 import { UserModule } from './user/user.module';
 import { CheckEventExistsMiddleware } from './middleware/CheckEventExistsMiddleware';
 import path from 'path';
+import { LoggerModule } from './logger/logger.module';
+import { LoggerMiddleware } from './middleware/logger.middlware';
+import { PinoLoggerService } from './logger/pino-logger.sevice';
 @Module({
-  imports: [DatabaseModule, EventModule, TicketModule, UserModule],
+  imports: [
+    DatabaseModule,
+    EventModule,
+    TicketModule,
+    UserModule,
+    LoggerModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {
   constructor(private dataSource: DataSource) {}
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes('*');
+  }
   // configure(consumer: MiddlewareConsumer) {
   //   consumer
   //     .apply(CheckEventExistsMiddleware)

@@ -11,6 +11,7 @@ import { UserService } from './user.service';
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
       secret: 'sussybaka',
+      global: true,
       signOptions: { expiresIn: '1h' },
     }),
   ],

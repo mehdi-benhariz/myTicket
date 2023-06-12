@@ -15,8 +15,7 @@ export class UserAuthService {
 
   constructor(
     private readonly userService: UserService,
-    private readonly jwtService: JwtService,
-    private readonly PassportLocalService: PassportLocalService,
+    private readonly jwtService: JwtService, // private readonly PassportLocalService: PassportLocalService,
   ) {}
 
   async register(user: CreateUserDto): Promise<any> {
