@@ -22,7 +22,8 @@ export class UserAuthService {
     const newUser: CreateUserDto = { ...user, password: hashedPassword };
 
     const createdUser = await this.userService.create(newUser);
-    return createdUser;
+    const payload = { email: createdUser.email, sub: createdUser.id };
+    return { createdUser, accessToken: this.jwtService.sign(payload) };
   }
   hashPassword(password: any): Promise<string> {
     return hash(password, 10);
@@ -31,9 +32,7 @@ export class UserAuthService {
   async login(user: LoginUserDto) {
     const validatedUser = await this.validateUser(user.email, user.password);
 
-    if (!validatedUser) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
+    if (!validatedUser) throw new UnauthorizedException('Invalid credentials');
     const payload = { email: validatedUser.email, sub: validatedUser.id };
     return {
       accessToken: this.jwtService.sign(payload),
