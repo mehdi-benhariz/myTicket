@@ -12,10 +12,10 @@ import { UserModule } from 'src/user/user.module';
   controllers: [EventController],
   providers: [
     EventService,
-    {
-      provide: APP_GUARD,
-      useClass: RolesGuard,
-    },
+    // {
+    // provide: APP_GUARD,
+    //   useClass: RolesGuard,
+    // },
   ],
 })
 export class EventModule {}
