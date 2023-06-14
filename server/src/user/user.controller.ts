@@ -1,23 +1,22 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Req,
+  Res,
   UseGuards,
-  Request,
 } from '@nestjs/common';
-import { UserService } from './user.service';
+import { Request, Response } from 'express';
+import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 import { CreateUserDto } from './dto/create-user.dto';
+import { LoginUserDto } from './dto/login-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserAuthService } from './user-auth.service';
-import { LoginUserDto } from './dto/login-user.dto';
-import { AuthGuard } from '@nestjs/passport';
-import { PassportAuthGuard } from '../guards/local-auth.guard';
-import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
-
+import { UserService } from './user.service';
 @Controller('user')
 export class UserController {
   constructor(
@@ -49,24 +48,41 @@ export class UserController {
   remove(@Param('id') id: string) {
     return this.userService.remove(+id);
   }
-  @Post('login')
-  async login(@Body() loginUserDto: LoginUserDto) {
+  @Post('loginV2')
+  async loginWithCookie(
+    @Body() loginUserDto: LoginUserDto,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    const token = await this.UserAuthService.login(loginUserDto);
+    res.cookie('access_token', token.accessToken, {
+      secure: process.env.NODE_ENV === 'production',
+      httpOnly: true,
+      maxAge: 1000 * 60 * 15,
+    });
+
+    return res.json(token);
+  }
+  @Post('loginV1')
+  async loginWithToken(@Body() loginUserDto: LoginUserDto) {
     return await this.UserAuthService.login(loginUserDto);
   }
   @Post('register')
   async register(@Body() createUserDto: CreateUserDto) {
     return this.UserAuthService.register(createUserDto);
   }
-  @UseGuards(PassportAuthGuard)
+  // @UseGuards(PassportAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Post('logout')
-  async logout(@Request() req) {
-    return this.UserAuthService.logout(req.user);
+  async logout(@Req() req: Request, @Res() res: Response) {
+    this.UserAuthService.logout(req, res);
+    return res.json({ message: 'logout' });
   }
 
   @UseGuards(JwtAuthGuard)
+  // @UseGuards(CookieAuthGuard)
   @Post('profile')
-  async test(@Request() req) {
-    console.log(req.user);
-    return req.user;
+  async test() {
+    return 'profile';
   }
 }

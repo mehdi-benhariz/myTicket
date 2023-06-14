@@ -1,17 +1,17 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserService } from './user.service';
-import { hash, compare } from 'bcrypt';
+import { compare, hash } from 'bcrypt';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { User } from './entities/user.entity';
-import { PassportLocalService } from 'passport-local';
+import { UserService } from './user.service';
+import { Request, Response } from 'express';
 
 @Injectable()
 export class UserAuthService {
   constructor(
     private readonly userService: UserService,
-    private readonly jwtService: JwtService, // private readonly PassportLocalService: PassportLocalService,
+    private readonly jwtService: JwtService,
   ) {}
 
   async register(user: CreateUserDto): Promise<any> {
@@ -25,7 +25,7 @@ export class UserAuthService {
     const payload = { email: createdUser.email, sub: createdUser.id };
     return { createdUser, accessToken: this.jwtService.sign(payload) };
   }
-  hashPassword(password: any): Promise<string> {
+  private hashPassword(password: any): Promise<string> {
     return hash(password, 10);
   }
 
@@ -34,8 +34,10 @@ export class UserAuthService {
 
     if (!validatedUser) throw new UnauthorizedException('Invalid credentials');
     const payload = { email: validatedUser.email, sub: validatedUser.id };
+    const accessToken = this.jwtService.sign(payload);
+
     return {
-      accessToken: this.jwtService.sign(payload),
+      accessToken,
     };
   }
 
@@ -66,7 +68,26 @@ export class UserAuthService {
     const isPasswordValid = await compare(password, hashedPassword);
     return isPasswordValid;
   }
-  async logout(user: any) {
+  // LOGOUT
+  async logout(req: Request, res: Response) {
+    res.clearCookie('access_token');
+    return 'logged out';
+  }
+
+  // *GET USER BY COOKIE
+  async validateUserByCookie(data: any) {
+    if (!data) throw new UnauthorizedException();
+    let user;
+
+    try {
+      const payload = await this.jwtService.verifyAsync(data, {
+        secret: 'sussybaka',
+      });
+      const user = await this.userService.findByEmail(payload['email']);
+      if (!user) throw new UnauthorizedException('User not found');
+    } catch {
+      throw new UnauthorizedException();
+    }
     return user;
   }
 }
