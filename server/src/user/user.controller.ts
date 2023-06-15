@@ -48,7 +48,7 @@ export class UserController {
   remove(@Param('id') id: string) {
     return this.userService.remove(+id);
   }
-  @Post('loginV2')
+  @Post('login')
   async loginWithCookie(
     @Body() loginUserDto: LoginUserDto,
     @Req() req: Request,

@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { CookieStrategy } from './auth/cookie.strategy';
 import { JwtStrategy } from './auth/jwt.strategy';
 import { UserStrategy } from './auth/user.strategy';
 import { UserAuthService } from './user-auth.service';

@@ -1,21 +1,18 @@
-import { Module } from '@nestjs/common';
-import { EventService } from './event.service';
-import { EventController } from './event.controller';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { RolesGuard } from 'src/guards/roles.guard';
-import { APP_GUARD } from '@nestjs/core';
+import { CurrentUserMiddleware } from 'src/middleware/CurrentUser.middleware';
 import { UserModule } from 'src/user/user.module';
+import { EventController } from './event.controller';
+import { EventService } from './event.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Event]), UserModule],
 
   controllers: [EventController],
-  providers: [
-    EventService,
-    // {
-    // provide: APP_GUARD,
-    //   useClass: RolesGuard,
-    // },
-  ],
+  providers: [EventService],
 })
-export class EventModule {}
+export class EventModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(CurrentUserMiddleware).forRoutes('event');
+  }
+}

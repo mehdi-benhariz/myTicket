@@ -15,6 +15,7 @@ import { Roles } from 'src/decorators/roles.decorator';
 import { Role } from 'src/decorators/roles';
 import { PassportAuthGuard } from 'src/guards/local-auth.guard';
 import { RolesGuard } from 'src/guards/roles.guard';
+import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 
 @Controller('event')
 export class EventController {
@@ -24,7 +25,7 @@ export class EventController {
   create(@Body() createEventDto: CreateEventDto) {
     return this.eventService.create(createEventDto);
   }
-  @UseGuards(PassportAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin)
   @Get()
   findAll() {
