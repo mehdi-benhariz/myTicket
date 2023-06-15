@@ -5,6 +5,7 @@ import { Event } from '../event/entities/event.entity';
 import { User } from 'src/user/entities/user.entity';
 
 export const databaseConfig: TypeOrmModuleOptions = {
+  //! change it later to .env , there was a problem with it
   type: 'postgres',
   host: 'localhost',
   port: 5432,

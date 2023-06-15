@@ -1,5 +1,4 @@
-import { Ticket } from 'src/ticket/entities/ticket.entity';
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class User {

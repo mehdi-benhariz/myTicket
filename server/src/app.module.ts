@@ -8,13 +8,15 @@ import { DatabaseModule } from './database/database.module';
 import { UserModule } from './user/user.module';
 import { LoggerModule } from './logger/logger.module';
 import { LoggerMiddleware } from './middleware/logger.middlware';
+import { ConfigModule } from './startup/config.module';
 @Module({
   imports: [
-    DatabaseModule,
     EventModule,
     TicketModule,
     UserModule,
     LoggerModule,
+    ConfigModule,
+    DatabaseModule,
   ],
   controllers: [AppController],
   providers: [AppService],
