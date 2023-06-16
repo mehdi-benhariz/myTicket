@@ -1,7 +1,7 @@
 import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CurrentUserMiddleware } from 'src/middleware/CurrentUser.middleware';
-import { UserModule } from 'src/user/user.module';
+import { UserModule } from '../user/user.module';
 import { EventController } from './event.controller';
 import { EventService } from './event.service';
 

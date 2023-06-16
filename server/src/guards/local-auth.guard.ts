@@ -7,7 +7,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from '@nestjs/passport';
 import { Observable } from 'rxjs';
-import { UserService } from 'src/user/user.service';
+import { UserService } from '../modules/user/user.service';
 
 @Injectable()
 export class PassportAuthGuard

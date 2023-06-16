@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { EventService } from '../event/event.service';
 import { EntityManager } from 'typeorm';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
 import { Ticket } from './entities/ticket.entity';
-import { EventService } from 'src/event/event.service';
 
 @Injectable()
 export class TicketService {
@@ -13,10 +13,14 @@ export class TicketService {
   ) {}
 
   async create(
-    eventId: string,
+    eventId: number,
     createTicketDto: CreateTicketDto,
+    userId: number,
   ): Promise<Ticket> {
     createTicketDto.eventId = eventId;
+
+    createTicketDto.userId = userId;
+
     const ticket = this.entityManager.create(Ticket, {
       ...createTicketDto,
     });

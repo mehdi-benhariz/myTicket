@@ -1,8 +1,8 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
-import { Ticket } from '../ticket/entities/ticket.entity';
-import { Event } from '../event/entities/event.entity';
-import { User } from 'src/user/entities/user.entity';
+import { Ticket } from 'src/modules/ticket/entities/ticket.entity';
+import { Event } from 'src/modules/event/entities/event.entity';
+import { User } from 'src/modules/user/entities/user.entity';
 
 export const databaseConfig: TypeOrmModuleOptions = {
   //! change it later to .env , there was a problem with it

@@ -1,28 +1,34 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
   Query,
+  Req,
 } from '@nestjs/common';
-import { TicketService } from './ticket.service';
+import { ApiTags } from '@nestjs/swagger';
+import { Request } from 'express';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
-import { EventService } from 'src/event/event.service';
+import { TicketService } from './ticket.service';
 
+@ApiTags('Ticket')
 @Controller(':eventId/ticket')
 export class TicketController {
   constructor(private readonly ticketService: TicketService) {}
 
   @Post()
+  // @UseGuards(JwtAuthGuard)
   create(
-    @Param('eventId') eventId: string,
+    @Param('eventId') eventId: number,
     @Body() createTicketDto: CreateTicketDto,
+    @Req() req: Request,
   ) {
-    return this.ticketService.create(eventId, createTicketDto);
+    const { user } = req.locals;
+    return this.ticketService.create(eventId, createTicketDto, user.id);
   }
 
   @Get()

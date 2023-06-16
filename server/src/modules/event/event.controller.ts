@@ -16,7 +16,9 @@ import { Role } from 'src/decorators/roles';
 import { PassportAuthGuard } from 'src/guards/local-auth.guard';
 import { RolesGuard } from 'src/guards/roles.guard';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Event')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('event')
 export class EventController {

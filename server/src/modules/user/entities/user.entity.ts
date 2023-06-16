@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Ticket } from './../../ticket/entities/ticket.entity';
 
 @Entity()
 export class User {
@@ -7,15 +8,16 @@ export class User {
 
   @Column({ unique: true })
   username: string;
+
   @Column({ unique: true })
   email: string;
+
   @Column()
   password: string;
 
   @Column({ default: 'customer' })
   role: string;
 
-  // @Column()
-  // @OneToMany(() => Ticket, (ticket) => ticket.owner, { cascade: true })
-  // tickets: Ticket[];
+  @OneToMany(() => Ticket, (ticket: Ticket) => ticket.user)
+  tickets: Ticket[];
 }

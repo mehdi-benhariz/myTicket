@@ -5,8 +5,8 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { NextFunction, Request } from 'express';
-import { UserService } from 'src/user/user.service';
-import { User } from 'src/user/entities/user.entity';
+import { UserService } from '../modules/user/user.service';
+import { User } from '../modules/user/entities/user.entity';
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace

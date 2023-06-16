@@ -1,6 +1,6 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
-import { EventService } from '../event/event.service';
+import { EventService } from '../modules/event/event.service';
 
 @Injectable()
 export class CheckEventExistsMiddleware implements NestMiddleware {
