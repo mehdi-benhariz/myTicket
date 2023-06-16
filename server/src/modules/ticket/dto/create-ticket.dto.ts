@@ -1,7 +1,10 @@
+import { IsNumber } from 'class-validator';
+
 export class CreateTicketDto {
-  constructor(
-    public eventId: number,
-    public price: number,
-    public userId: number,
-  ) {}
+  // @IsNumber()
+  // eventId: number;
+  @IsNumber()
+  price: number;
+  // @IsNumber()
+  // userId: number;
 }

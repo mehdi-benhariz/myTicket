@@ -17,12 +17,12 @@ export class TicketService {
     createTicketDto: CreateTicketDto,
     userId: number,
   ): Promise<Ticket> {
-    createTicketDto.eventId = eventId;
+    // createTicketDto.eventId = eventId;
 
-    createTicketDto.userId = userId;
-
+    // createTicketDto.userId = userId;
+    const ticketOtBeCreated = { ...createTicketDto, eventId, userId };
     const ticket = this.entityManager.create(Ticket, {
-      ...createTicketDto,
+      ...ticketOtBeCreated,
     });
     return await this.entityManager.save(Ticket, ticket);
   }

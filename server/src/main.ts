@@ -4,11 +4,14 @@ import * as cookieParser from 'cookie-parser';
 import * as dotenv from 'dotenv';
 import { AppModule } from './app.module';
 import { initSecurityConfig } from './startup/security.config';
+import { ValidationPipe } from './pipes/validation.pipe';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   dotenv.config({ path: 'config/.env' });
   app.use(cookieParser());
+  app.useGlobalPipes(new ValidationPipe());
+
   app.setGlobalPrefix('api/v1');
   const config = new DocumentBuilder()
     .setTitle('MyTicket API')

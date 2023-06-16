@@ -29,7 +29,7 @@ export class Ticket {
   @JoinColumn({ name: 'eventId' })
   event: Event;
   //! nullable is logically wrong , change it after you udpate database
-  @Column({ nullable: true })
+  @Column()
   userId: number;
   @ManyToOne(() => User, (user) => user.tickets)
   @JoinColumn({ name: 'userId' })
