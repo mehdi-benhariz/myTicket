@@ -18,6 +18,6 @@ export class User {
   @Column({ default: 'customer' })
   role: string;
 
-  @OneToMany(() => Ticket, (ticket: Ticket) => ticket.user)
+  @OneToMany(() => Ticket, (ticket: Ticket) => ticket.owner)
   tickets: Ticket[];
 }

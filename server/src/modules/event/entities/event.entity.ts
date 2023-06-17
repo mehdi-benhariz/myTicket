@@ -1,5 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { Ticket } from '../../ticket/entities/ticket.entity';
+import { TicketCategory } from 'src/modules/ticket-category/entities/ticket-category.entity';
 
 @Entity()
 export class Event {
@@ -18,6 +19,8 @@ export class Event {
   @Column({ nullable: true })
   description: string;
 
-  @OneToMany(() => Ticket, (ticket) => ticket.event, { cascade: true })
-  tickets: Ticket[];
+  @OneToMany(() => TicketCategory, (ticketCategory) => ticketCategory.event, {
+    cascade: true,
+  })
+  ticketCategories: TicketCategory[];
 }

@@ -14,8 +14,26 @@ export class EventService {
     return await this.entityManager.save(Event, event);
   }
 
-  async findAll(): Promise<Event[]> {
-    return await this.entityManager.find(Event);
+  async findAll(
+    search?: (event: Event) => boolean,
+    limit = 10,
+    page = 1,
+    orderBy?: keyof Event,
+  ): Promise<Event[]> {
+    const query = this.entityManager.createQueryBuilder(Event, 'event');
+
+    if (search) {
+      query.where(search);
+    }
+
+    const offset = (page - 1) * limit;
+    query.skip(offset).take(limit);
+
+    if (orderBy) {
+      query.orderBy(`event.${orderBy}`);
+    }
+
+    return query.getMany();
   }
 
   async findOne(id: number): Promise<Event> {

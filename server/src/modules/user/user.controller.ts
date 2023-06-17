@@ -13,17 +13,20 @@ import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserService } from './user.service';
+import { RolesGuard } from 'src/guards/roles.guard';
+import { Roles } from 'src/decorators/roles.decorator';
+import { Role } from 'src/decorators/roles';
 
 @ApiTags('User')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(Role.Admin)
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
-
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
-
   @Get()
   findAll() {
     return this.userService.findAll();
@@ -44,8 +47,7 @@ export class UserController {
     return this.userService.remove(+id);
   }
 
-  @UseGuards(JwtAuthGuard)
-  // @UseGuards(CookieAuthGuard)
+  @Roles(Role.Manager, Role.Costumer)
   @Post('profile')
   async test() {
     return 'profile';

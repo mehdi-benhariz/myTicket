@@ -1,3 +1,4 @@
+import { TicketCategory } from 'src/modules/ticket-category/entities/ticket-category.entity';
 import {
   Column,
   Entity,
@@ -5,7 +6,6 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Event } from './../../event/entities/event.entity';
 import { User } from './..//../user/entities/user.entity';
 
 @Entity()
@@ -17,21 +17,18 @@ export class Ticket {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  price: number;
-
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   date: Date;
 
-  @Column({})
-  eventId: number;
-  @ManyToOne(() => Event, (event) => event.tickets)
-  @JoinColumn({ name: 'eventId' })
-  event: Event;
-  //! nullable is logically wrong , change it after you udpate database
   @Column()
   userId: number;
-  @ManyToOne(() => User, (user) => user.tickets)
+  @ManyToOne(() => User, (owner) => owner.tickets)
   @JoinColumn({ name: 'userId' })
-  user: User;
+  owner: User;
+
+  @Column()
+  ticketCategoryId: number;
+  @ManyToOne(() => TicketCategory, (ticketCategory) => ticketCategory.tickets)
+  @JoinColumn({ name: 'ticketCategoryId' })
+  ticketCategory: TicketCategory;
 }
