@@ -1,12 +1,23 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  NotFoundException,
+  forwardRef,
+} from '@nestjs/common';
+import { EntityManager } from 'typeorm';
+import { UserAuthService } from './auth/user-auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { ProfileUserDto } from './dto/profile-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
-import { EntityManager } from 'typeorm';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly entityManager: EntityManager) {}
+  constructor(
+    private readonly entityManager: EntityManager,
+    @Inject(forwardRef(() => UserAuthService))
+    private readonly userAuthService: UserAuthService,
+  ) {}
 
   async findByEmail(email: string): Promise<User> | null {
     const user = await this.entityManager.findOneBy(User, { email });
@@ -14,9 +25,11 @@ export class UserService {
       throw new NotFoundException(`User with email ${email} not found`);
     return user;
   }
-  create(createUserDto: CreateUserDto) {
+
+  async create(createUserDto: CreateUserDto) {
     const user = this.entityManager.create(User, createUserDto);
-    return this.entityManager.save(User, user);
+    user.password = await this.userAuthService.hashPassword(user.password);
+    return await this.entityManager.save(User, user);
   }
 
   async findAll(
@@ -24,14 +37,14 @@ export class UserService {
     limit = 10,
     page = 1,
     orderBy?: keyof User,
-  ): Promise<User[]> {
+  ): Promise<ProfileUserDto[]> {
     const query = this.entityManager.createQueryBuilder(User, 'user');
 
     // Apply search criteria if provided
-    if (search) {
-      query.where(search);
-    }
-
+    if (search) query.where(search);
+    //select the fields we want to return
+    //TODO: change this to use the ProfileUserDto
+    query.select(['user.email', 'user.username', 'user.role']);
     // Apply pagination
     const offset = (page - 1) * limit;
     query.skip(offset).take(limit);
@@ -40,7 +53,9 @@ export class UserService {
     if (orderBy) query.orderBy(`user.${orderBy}`);
 
     // Execute the query and return the result
-    return query.getMany();
+    const users = await query.getMany();
+    return users;
+    // return plainToClass(ProfileUserDto, users);
   }
 
   async findOne(id: number): Promise<User> {

@@ -24,12 +24,14 @@ export class CurrentUserMiddleware implements NestMiddleware {
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
   ) {}
-
+  //! this middleware will not prevent the request from going to the next middleware
+  //! it will add the user to the request object
   async use(req: Request, res: Response, next: NextFunction) {
     let token = this.extractTokenFromHeader(req);
 
     if (!token) token = req.cookies['access_token'];
-    if (!token) throw new UnauthorizedException();
+    // if (!token) throw new UnauthorizedException();
+    if (!token) return next();
 
     try {
       const payload = await this.jwtService.verifyAsync(token, {
@@ -41,7 +43,8 @@ export class CurrentUserMiddleware implements NestMiddleware {
       req.locals = {};
       req.locals.user = user;
     } catch (err) {
-      throw new UnauthorizedException();
+      // throw new UnauthorizedException();
+      return next();
     }
 
     next();

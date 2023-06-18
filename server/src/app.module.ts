@@ -15,6 +15,7 @@ import { TicketCategoryModule } from './modules/ticket-category/ticket-category.
 import { TicketModule } from './modules/ticket/ticket.module';
 import { UserModule } from './modules/user/user.module';
 import { ConfigModule } from './startup/config.module';
+import { CurrentUserMiddleware } from './middleware/CurrentUser.middleware';
 @Module({
   imports: [
     EventModule,
@@ -37,6 +38,10 @@ import { ConfigModule } from './startup/config.module';
 export class AppModule {
   constructor(private dataSource: DataSource) {}
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(LoggerMiddleware).forRoutes('*');
+    consumer
+      .apply(LoggerMiddleware)
+      .forRoutes('*')
+      .apply(CurrentUserMiddleware)
+      .forRoutes('*');
   }
 }

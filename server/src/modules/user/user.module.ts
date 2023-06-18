@@ -20,8 +20,8 @@ import { UserService } from './user.service';
   ],
   controllers: [UserController, AuthController],
   providers: [
-    UserService,
     UserAuthService,
+    UserService,
     UserStrategy,
     JwtStrategy,
     // CookieStrategy,

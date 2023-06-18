@@ -2,8 +2,8 @@ import { Body, Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
-import { CreateUserDto } from '../dto/create-user.dto';
 import { LoginUserDto } from '../dto/login-user.dto';
+import { RegisterUserDto } from '../dto/register-user.dto';
 import { UserAuthService } from './user-auth.service';
 
 @ApiTags('Auth')
@@ -27,8 +27,8 @@ export class AuthController {
   }
 
   @Post('register')
-  async register(@Body() createUserDto: CreateUserDto) {
-    return this.userAuthService.register(createUserDto);
+  async register(@Body() registerUserDto: RegisterUserDto) {
+    return this.userAuthService.register(registerUserDto);
   }
   // @UseGuards(PassportAuthGuard)
   @UseGuards(JwtAuthGuard)

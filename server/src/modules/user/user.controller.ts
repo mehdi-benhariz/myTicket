@@ -16,6 +16,7 @@ import { UserService } from './user.service';
 import { RolesGuard } from 'src/guards/roles.guard';
 import { Roles } from 'src/decorators/roles.decorator';
 import { Role } from 'src/decorators/roles';
+import { CustomParseIntPipe } from 'src/pipes/parseInt.pipe';
 
 @ApiTags('User')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -33,17 +34,20 @@ export class UserController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', new CustomParseIntPipe()) id: string) {
     return this.userService.findOne(+id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  update(
+    @Param('id', new CustomParseIntPipe()) id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
     return this.userService.update(+id, updateUserDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id', new CustomParseIntPipe()) id: string) {
     return this.userService.remove(+id);
   }
 

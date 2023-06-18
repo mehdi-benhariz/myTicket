@@ -1,4 +1,9 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  UnauthorizedException,
+  forwardRef,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { compare, hash } from 'bcrypt';
 import { CreateUserDto } from '../dto/create-user.dto';
@@ -6,26 +11,28 @@ import { LoginUserDto } from '../dto/login-user.dto';
 import { User } from '../entities/user.entity';
 import { UserService } from '../user.service';
 import { Request, Response } from 'express';
+import { RegisterUserDto } from '../dto/register-user.dto';
 
 @Injectable()
 export class UserAuthService {
   constructor(
+    @Inject(forwardRef(() => UserService))
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
   ) {}
 
-  async register(user: CreateUserDto): Promise<any> {
+  async register(user: RegisterUserDto): Promise<any> {
     // Generate a hash of the user's password using Passport's password hashing
     const hashedPassword = await this.hashPassword(user.password);
 
     // Create a new user object with the hashed password
-    const newUser: CreateUserDto = { ...user, password: hashedPassword };
+    const newUser: RegisterUserDto = { ...user, password: hashedPassword };
 
-    const createdUser = await this.userService.create(newUser);
+    const createdUser = await this.userService.create(newUser as CreateUserDto);
     const payload = { email: createdUser.email, sub: createdUser.id };
     return { createdUser, accessToken: this.jwtService.sign(payload) };
   }
-  private hashPassword(password: any): Promise<string> {
+  hashPassword(password: any): Promise<string> {
     return hash(password, 10);
   }
 
