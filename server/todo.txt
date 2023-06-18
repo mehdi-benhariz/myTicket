@@ -1,0 +1,6 @@
+[X] change ticket route to include eventId ✅
+490909 
+[X] implement passport ✅
+[X] add manger function ✅
+[X] change and add routes for category and tickets
+[X]
