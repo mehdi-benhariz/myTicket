@@ -6,12 +6,12 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { compare, hash } from 'bcrypt';
+import { Request, Response } from 'express';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { LoginUserDto } from '../dto/login-user.dto';
+import { RegisterUserDto } from '../dto/register-user.dto';
 import { User } from '../entities/user.entity';
 import { UserService } from '../user.service';
-import { Request, Response } from 'express';
-import { RegisterUserDto } from '../dto/register-user.dto';
 
 @Injectable()
 export class UserAuthService {
@@ -32,9 +32,6 @@ export class UserAuthService {
     const payload = { email: createdUser.email, sub: createdUser.id };
     return { createdUser, accessToken: this.jwtService.sign(payload) };
   }
-  hashPassword(password: any): Promise<string> {
-    return hash(password, 10);
-  }
 
   async login(user: LoginUserDto) {
     const validatedUser = await this.validateUser(user.email, user.password);
@@ -48,6 +45,14 @@ export class UserAuthService {
     };
   }
 
+  // LOGOUT
+  async logout(req: Request, res: Response) {
+    res.clearCookie('access_token');
+    return 'logged out';
+  }
+  async hashPassword(password: any): Promise<string> {
+    return await hash(password, 10);
+  }
   async validateUser(email: string, password: string): Promise<User> | null {
     // Get the user with the given email
     const user = await this.userService.findByEmail(email);
@@ -74,11 +79,6 @@ export class UserAuthService {
   ): Promise<boolean> {
     const isPasswordValid = await compare(password, hashedPassword);
     return isPasswordValid;
-  }
-  // LOGOUT
-  async logout(req: Request, res: Response) {
-    res.clearCookie('access_token');
-    return 'logged out';
   }
 
   // *GET USER BY COOKIE

@@ -17,7 +17,7 @@ export class AuthController {
     @Res() res: Response,
   ) {
     const token = await this.userAuthService.login(loginUserDto);
-    res.cookie('access_token', token.accessToken, {
+    res.cookie('access_token', token?.accessToken, {
       secure: process.env.NODE_ENV === 'production',
       httpOnly: true,
       maxAge: 1000 * 60 * 15,

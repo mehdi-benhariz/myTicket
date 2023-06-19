@@ -4,8 +4,8 @@ export class CreateTicketDto {
   @IsNumber()
   eventId: number;
 
-  @IsNumber()
-  userId: number;
+  // @IsNumber()
+  // userId: number;
 
   @IsNumber()
   ticketCategoryId: number;

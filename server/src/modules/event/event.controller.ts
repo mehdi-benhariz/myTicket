@@ -25,22 +25,21 @@ import { EventService } from './event.service';
 export class EventController {
   constructor(private readonly eventService: EventService) {}
 
-  @Roles(Role.Admin)
   @Post()
   create(@Body() createEventDto: CreateEventDto) {
     return this.eventService.create(createEventDto);
   }
-  @Roles(Role.Admin, Role.Costumer)
+  @Roles(Role.Costumer, Role.Admin, Role.Manager)
   @Get()
   findAll() {
     return this.eventService.findAll();
   }
-  @Roles(Role.Admin, Role.Costumer)
+  @Roles(Role.Costumer, Role.Admin, Role.Manager)
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: string) {
     return this.eventService.findOne(+id);
   }
-  @Roles(Role.Admin)
+  @Roles(Role.Admin, Role.Manager)
   @Patch(':id')
   update(
     @Param('id', new CustomParseIntPipe()) id: string,
@@ -48,7 +47,7 @@ export class EventController {
   ) {
     return this.eventService.update(+id, updateEventDto);
   }
-  @Roles(Role.Admin)
+  @Roles(Role.Admin, Role.Manager)
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: string) {
     return this.eventService.remove(+id);

@@ -1,6 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { EventService } from '../event/event.service';
+import { PaginationDto } from 'src/commons/paggination.dto';
 import { EntityManager } from 'typeorm';
+import { EventService } from '../event/event.service';
+import { TicketCategoryService } from './../ticket-category/ticket-category.service';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
 import { Ticket } from './entities/ticket.entity';
@@ -10,17 +12,28 @@ export class TicketService {
   constructor(
     private readonly entityManager: EntityManager,
     private readonly eventService: EventService,
+    private readonly ticketCategoryService: TicketCategoryService,
   ) {}
 
   async create(
-    eventId: number,
     createTicketDto: CreateTicketDto,
     userId: number,
   ): Promise<Ticket> {
     // createTicketDto.eventId = eventId;
 
     // createTicketDto.userId = userId;
-    const ticketOtBeCreated = { ...createTicketDto, eventId, userId };
+    const ticketOtBeCreated = { ...createTicketDto, userId };
+    //TODO check capacity , if total tickets is greater than capacity throw error
+    const category = await this.ticketCategoryService.findOne(
+      ticketOtBeCreated.ticketCategoryId,
+    );
+    if (!category) throw new NotFoundException('Ticket category not found');
+
+    if (category.capacity >= category.tickets.length)
+      throw new Error(
+        `Sorry, the ticket category ${category.name} is sold out 🙁`,
+      );
+
     const ticket = this.entityManager.create(Ticket, {
       ...ticketOtBeCreated,
     });
@@ -32,18 +45,29 @@ export class TicketService {
     limit = 10,
     page = 1,
     orderBy?: keyof Ticket,
-  ): Promise<Ticket[]> {
+  ): Promise<PaginationDto<Ticket>> {
     const query = this.entityManager.createQueryBuilder(Ticket, 'ticket');
 
     if (search) query.where(search);
 
-    const offset = (page - 1) * limit;
-    query.skip(offset).take(limit);
+    const [data, totalCount] = await query
+      .skip((page - 1) * limit)
+      .take(limit)
+      .orderBy(orderBy ? `ticket.${orderBy}` : undefined)
+      .getManyAndCount();
 
-    if (orderBy) query.orderBy(`ticket.${orderBy}`);
+    const totalPages = Math.ceil(totalCount / limit);
 
-    return query.getMany();
+    const paginationDto: PaginationDto<Ticket> = {
+      data,
+      totalCount,
+      currentPage: page,
+      totalPages,
+    };
+
+    return paginationDto;
   }
+
   async findAllByEvent(eventId: string): Promise<Ticket[]> {
     await this.eventService.findOne(+eventId);
     const query = this.entityManager.createQueryBuilder(Ticket, 'ticket');

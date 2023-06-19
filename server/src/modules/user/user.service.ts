@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Inject,
   Injectable,
   NotFoundException,
@@ -27,8 +28,14 @@ export class UserService {
   }
 
   async create(createUserDto: CreateUserDto) {
+    if (
+      await this.entityManager.findOneBy(User, { email: createUserDto.email })
+    )
+      throw new BadRequestException('User with that email already exists');
+    createUserDto.password = await this.userAuthService.hashPassword(
+      createUserDto.password,
+    );
     const user = this.entityManager.create(User, createUserDto);
-    user.password = await this.userAuthService.hashPassword(user.password);
     return await this.entityManager.save(User, user);
   }
 

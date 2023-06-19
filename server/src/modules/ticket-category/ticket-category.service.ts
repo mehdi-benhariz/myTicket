@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateTicketCategoryDto } from './dto/create-ticket-category.dto';
 import { UpdateTicketCategoryDto } from './dto/update-ticket-category.dto';
 import { TicketCategory } from './entities/ticket-category.entity';
-import { EntityManager } from 'typeorm';
+import { EntityManager, SelectQueryBuilder } from 'typeorm';
 
 @Injectable()
 export class TicketCategoryService {
@@ -16,8 +16,8 @@ export class TicketCategoryService {
     return this.entityManager.save(ticketCategory);
   }
 
-  findAll(
-    search?: (category: TicketCategory) => boolean,
+  async findAll(
+    search?: (queryBuilder: SelectQueryBuilder<TicketCategory>) => void,
     limit = 10,
     page = 1,
     orderBy?: keyof TicketCategory,
@@ -27,18 +27,21 @@ export class TicketCategoryService {
       'ticket_category',
     );
 
-    if (search) query.where(search);
+    if (search) search(query);
 
     const offset = (page - 1) * limit;
     query.skip(offset).take(limit);
 
     if (orderBy) query.orderBy(`ticket_category.${orderBy}`);
 
-    return query.getMany();
+    return await query.getMany();
   }
 
   findOne(id: number) {
-    return this.entityManager.findOne(TicketCategory, { where: { id } });
+    return this.entityManager.findOne(TicketCategory, {
+      where: { id },
+      relations: ['tickets'],
+    });
   }
 
   async update(id: number, updateTicketCategoryDto: UpdateTicketCategoryDto) {
@@ -48,7 +51,7 @@ export class TicketCategoryService {
 
     Object.assign(ticketCategory, updateTicketCategoryDto);
 
-    return this.entityManager.save(ticketCategory);
+    return await this.entityManager.save(ticketCategory);
   }
 
   async remove(id: number) {

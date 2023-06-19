@@ -20,28 +20,34 @@ import { CustomParseIntPipe } from 'src/pipes/parseInt.pipe';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
 import { TicketService } from './ticket.service';
+import { PaginationDto } from 'src/commons/paggination.dto';
+import { Ticket } from './entities/ticket.entity';
 
 @ApiTags('Ticket')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Controller(':eventId/ticket')
+@Controller('ticket')
 export class TicketController {
   constructor(private readonly ticketService: TicketService) {}
 
-  @Roles(Role.Costumer)
+  @Roles(Role.Costumer, Role.Manager, Role.Admin)
   @Post()
-  create(
-    @Param('eventId', new CustomParseIntPipe()) eventId: number,
-    @Body() createTicketDto: CreateTicketDto,
-    @Req() req: Request,
-  ) {
+  create(@Body() createTicketDto: CreateTicketDto, @Req() req: Request) {
     const { user } = req.locals;
-    return this.ticketService.create(eventId, createTicketDto, user.id);
+    return this.ticketService.create(createTicketDto, user.id);
   }
   @Roles(Role.Costumer, Role.Admin)
   @Get()
-  findAll(@Query('eventId') eventId?: string) {
-    if (eventId) return this.ticketService.findAllByEvent(eventId);
-    else return this.ticketService.findAll();
+  async findAll(
+    @Query('ticketCategoryId') ticketCategoryId?: number,
+    @Query('limit') limit = 10,
+    @Query('page') page = 1,
+    @Query('orderBy') orderBy?: keyof Ticket,
+  ): Promise<PaginationDto<Ticket>> {
+    const search = ticketCategoryId
+      ? (ticket: Ticket) => ticket.ticketCategoryId === ticketCategoryId
+      : undefined;
+
+    return this.ticketService.findAll(search, limit, page, orderBy);
   }
 
   @Get(':ticketId')
