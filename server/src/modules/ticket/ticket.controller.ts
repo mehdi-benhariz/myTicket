@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
+import { PaginationDto } from 'src/commons/paggination.dto';
 import { Role } from 'src/decorators/roles';
 import { Roles } from 'src/decorators/roles.decorator';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
@@ -19,9 +20,8 @@ import { RolesGuard } from 'src/guards/roles.guard';
 import { CustomParseIntPipe } from 'src/pipes/parseInt.pipe';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
-import { TicketService } from './ticket.service';
-import { PaginationDto } from 'src/commons/paggination.dto';
 import { Ticket } from './entities/ticket.entity';
+import { TicketService } from './ticket.service';
 
 @ApiTags('Ticket')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -33,7 +33,11 @@ export class TicketController {
   @Post()
   create(@Body() createTicketDto: CreateTicketDto, @Req() req: Request) {
     const { user } = req.locals;
-    return this.ticketService.create(createTicketDto, user.id);
+    const ticketToBeCreated = {
+      ...createTicketDto,
+      userId: user.id,
+    };
+    return this.ticketService.create(ticketToBeCreated);
   }
   @Roles(Role.Costumer, Role.Admin)
   @Get()

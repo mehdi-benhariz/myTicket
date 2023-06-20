@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PaginationDto } from 'src/commons/paggination.dto';
 import { EntityManager } from 'typeorm';
 import { EventService } from '../event/event.service';
@@ -6,31 +10,25 @@ import { TicketCategoryService } from './../ticket-category/ticket-category.serv
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
 import { Ticket } from './entities/ticket.entity';
+import { GenericService } from 'src/commons/genericService.interface';
 
 @Injectable()
-export class TicketService {
+export class TicketService implements GenericService<Ticket> {
   constructor(
     private readonly entityManager: EntityManager,
     private readonly eventService: EventService,
     private readonly ticketCategoryService: TicketCategoryService,
   ) {}
 
-  async create(
-    createTicketDto: CreateTicketDto,
-    userId: number,
-  ): Promise<Ticket> {
+  async create(ticketOtBeCreated: Partial<Ticket>): Promise<Ticket> {
     // createTicketDto.eventId = eventId;
-
-    // createTicketDto.userId = userId;
-    const ticketOtBeCreated = { ...createTicketDto, userId };
-    //TODO check capacity , if total tickets is greater than capacity throw error
     const category = await this.ticketCategoryService.findOne(
       ticketOtBeCreated.ticketCategoryId,
     );
     if (!category) throw new NotFoundException('Ticket category not found');
 
-    if (category.capacity >= category.tickets.length)
-      throw new Error(
+    if (category.capacity <= category.tickets.length)
+      throw new BadRequestException(
         `Sorry, the ticket category ${category.name} is sold out 🙁`,
       );
 

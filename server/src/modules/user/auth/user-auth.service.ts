@@ -20,7 +20,7 @@ export class UserAuthService {
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
   ) {}
-
+  //todo chan ge it later
   async register(user: RegisterUserDto): Promise<any> {
     // Generate a hash of the user's password using Passport's password hashing
     const hashedPassword = await this.hashPassword(user.password);
@@ -31,6 +31,10 @@ export class UserAuthService {
     const createdUser = await this.userService.create(newUser as CreateUserDto);
     const payload = { email: createdUser.email, sub: createdUser.id };
     return { createdUser, accessToken: this.jwtService.sign(payload) };
+  }
+  // *HASH PASSWORD
+  async hashPassword(password: any): Promise<string> {
+    return await hash(password, 10);
   }
 
   async login(user: LoginUserDto) {
@@ -45,18 +49,9 @@ export class UserAuthService {
     };
   }
 
-  // LOGOUT
-  async logout(req: Request, res: Response) {
-    res.clearCookie('access_token');
-    return 'logged out';
-  }
-  async hashPassword(password: any): Promise<string> {
-    return await hash(password, 10);
-  }
   async validateUser(email: string, password: string): Promise<User> | null {
     // Get the user with the given email
     const user = await this.userService.findByEmail(email);
-    console.log(user);
     // If no user was found, return null (invalid credentials)
     if (!user) return null;
 
@@ -79,6 +74,11 @@ export class UserAuthService {
   ): Promise<boolean> {
     const isPasswordValid = await compare(password, hashedPassword);
     return isPasswordValid;
+  }
+  // LOGOUT
+  async logout(req: Request, res: Response) {
+    res.clearCookie('access_token');
+    return 'logged out';
   }
 
   // *GET USER BY COOKIE

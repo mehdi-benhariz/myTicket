@@ -9,13 +9,13 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DatabaseModule } from './database/database.module';
 import { LoggerModule } from './logger/logger.module';
+import { CurrentUserMiddleware } from './middleware/CurrentUser.middleware';
 import { LoggerMiddleware } from './middleware/logger.middlware';
 import { EventModule } from './modules/event/event.module';
 import { TicketCategoryModule } from './modules/ticket-category/ticket-category.module';
 import { TicketModule } from './modules/ticket/ticket.module';
 import { UserModule } from './modules/user/user.module';
 import { ConfigModule } from './startup/config.module';
-import { CurrentUserMiddleware } from './middleware/CurrentUser.middleware';
 @Module({
   imports: [
     EventModule,

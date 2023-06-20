@@ -5,7 +5,8 @@ import {
   NotFoundException,
   forwardRef,
 } from '@nestjs/common';
-import { EntityManager } from 'typeorm';
+import { GenericService } from 'src/commons/genericService.interface';
+import { EntityManager, FindOneOptions } from 'typeorm';
 import { UserAuthService } from './auth/user-auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ProfileUserDto } from './dto/profile-user.dto';
@@ -13,7 +14,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 
 @Injectable()
-export class UserService {
+export class UserService implements GenericService<User> {
   constructor(
     private readonly entityManager: EntityManager,
     @Inject(forwardRef(() => UserAuthService))
@@ -65,10 +66,15 @@ export class UserService {
     // return plainToClass(ProfileUserDto, users);
   }
 
-  async findOne(id: number): Promise<User> {
-    return this.entityManager.findOne(User, { where: { id } });
-  }
+  async findOne(id: number, relations: string[] = []): Promise<User> {
+    const queryOptions: FindOneOptions<User> = {
+      where: { id },
+    };
 
+    if (relations.length > 0) queryOptions.relations = relations;
+
+    return this.entityManager.findOne(User, queryOptions);
+  }
   async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
     const user = await this.findOne(id);
     if (!user) throw new Error(`User with ID ${id} not found`);
