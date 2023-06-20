@@ -6,6 +6,11 @@ import {
   forwardRef,
 } from '@nestjs/common';
 import { GenericService } from 'src/commons/genericService.interface';
+import {
+  _handleOrderBy,
+  _handlePagination,
+  _handleSearch,
+} from 'src/utils/service-helpers';
 import { EntityManager, FindOneOptions } from 'typeorm';
 import { UserAuthService } from './auth/user-auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -41,21 +46,19 @@ export class UserService implements GenericService<User> {
   }
 
   async findAll(
-    search?: (user: User) => boolean,
+    searchField?: keyof User,
+    searchValue?: string,
     limit = 10,
     page = 1,
     orderBy?: keyof User,
   ): Promise<ProfileUserDto[]> {
     const query = this.entityManager.createQueryBuilder(User, 'user');
 
-    if (search) query.where(search);
-    //select the fields we want to return
-    //TODO: change this to use the ProfileUserDto
-    query.select(['user.email', 'user.username', 'user.role']);
-    const offset = (page - 1) * limit;
-    query.skip(offset).take(limit);
+    _handleSearch<User>(query, searchField, searchValue, 'user');
 
-    if (orderBy) query.orderBy(`user.${orderBy}`);
+    _handlePagination<User>(query, limit, page);
+
+    _handleOrderBy<User>(query, orderBy, 'user');
 
     const users = await query.getMany();
     return users;

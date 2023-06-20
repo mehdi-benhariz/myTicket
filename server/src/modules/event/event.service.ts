@@ -4,6 +4,11 @@ import { EntityManager, FindOneOptions } from 'typeorm';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 import { Event } from './entities/event.entity';
+import {
+  _handleOrderBy,
+  _handlePagination,
+  _handleSearch,
+} from 'src/utils/service-helpers';
 
 //there's a problem when using the repository, so we use the entityManager instead
 @Injectable()
@@ -16,21 +21,21 @@ export class EventService implements GenericService<Event> {
   }
 
   async findAll(
-    search?: (event: Event) => boolean,
+    searchField?: keyof Event,
+    searchValue?: string,
     limit = 10,
     page = 1,
     orderBy?: keyof Event,
   ): Promise<Event[]> {
     const query = this.entityManager.createQueryBuilder(Event, 'event');
 
-    if (search) query.where(search);
+    _handleSearch<Event>(query, searchField, searchValue, 'event');
 
-    const offset = (page - 1) * limit;
-    query.skip(offset).take(limit);
+    _handlePagination<Event>(query, limit, page);
 
-    if (orderBy) query.orderBy(`event.${orderBy}`);
+    _handleOrderBy<Event>(query, orderBy, 'event');
 
-    return query.getMany();
+    return await query.getMany();
   }
 
   async findOne(id: number, relations: string[] = []): Promise<Event> {
@@ -41,9 +46,6 @@ export class EventService implements GenericService<Event> {
     if (relations.length > 0) queryOptions.relations = relations;
 
     return await this.entityManager.findOne(Event, queryOptions);
-    // const event = await this.entityManager.findOneBy(Event, { id });
-    // if (!event) throw new NotFoundException(`Event with ID ${id} not found`);
-    // return event;
   }
 
   async update(id: number, updateEventDto: UpdateEventDto): Promise<Event> {

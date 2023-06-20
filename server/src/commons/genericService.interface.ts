@@ -3,7 +3,8 @@ import { PaginationDto } from './paggination.dto';
 export interface GenericService<T> {
   create(entity: Partial<T>, args?: any): Promise<T>;
   findAll(
-    search?: (entity: T) => boolean,
+    searchField?: keyof T,
+    searchValue?: string,
     limit?: number,
     page?: number,
     orderBy?: keyof T,

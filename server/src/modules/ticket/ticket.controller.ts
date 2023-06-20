@@ -46,12 +46,16 @@ export class TicketController {
     @Query('limit') limit = 10,
     @Query('page') page = 1,
     @Query('orderBy') orderBy?: keyof Ticket,
+    @Query('searchField') searchField?: keyof Ticket,
+    @Query('searchValue') searchValue?: string,
   ): Promise<PaginationDto<Ticket>> {
-    const search = ticketCategoryId
-      ? (ticket: Ticket) => ticket.ticketCategoryId === ticketCategoryId
-      : undefined;
-
-    return this.ticketService.findAll(search, limit, page, orderBy);
+    return this.ticketService.findAll(
+      searchField,
+      searchValue,
+      limit,
+      page,
+      orderBy,
+    );
   }
 
   @Get(':ticketId')

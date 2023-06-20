@@ -1,13 +1,13 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { CreateTicketCategoryDto } from './dto/create-ticket-category.dto';
-import { UpdateTicketCategoryDto } from './dto/update-ticket-category.dto';
-import { TicketCategory } from './entities/ticket-category.entity';
-import { EntityManager, SelectQueryBuilder } from 'typeorm';
+import { Injectable } from '@nestjs/common';
 import {
   _handleOrderBy,
   _handlePagination,
   _handleSearch,
 } from 'src/utils/service-helpers';
+import { EntityManager } from 'typeorm';
+import { CreateTicketCategoryDto } from './dto/create-ticket-category.dto';
+import { UpdateTicketCategoryDto } from './dto/update-ticket-category.dto';
+import { TicketCategory } from './entities/ticket-category.entity';
 
 @Injectable()
 export class TicketCategoryService {
@@ -37,7 +37,6 @@ export class TicketCategoryService {
       query,
       searchField,
       searchValue,
-      TicketCategory,
       'ticket_category',
     );
     // this._handleSearch(query, searchField, searchValue);
@@ -76,52 +75,5 @@ export class TicketCategoryService {
     }
 
     await this.entityManager.remove(ticketCategory);
-  }
-
-  // ****HELPER METHODS****
-  _handleSearch(
-    query: SelectQueryBuilder<TicketCategory>,
-    searchField: keyof TicketCategory,
-    searchValue: string,
-  ) {
-    if (!searchField || !searchValue) return;
-    const isFieldValid = Object.prototype.hasOwnProperty.call(
-      TicketCategory,
-      searchField,
-    );
-    if (isFieldValid)
-      query.where(`ticket_category.${searchField} = :searchValue`, {
-        searchValue,
-      });
-    else throw new BadRequestException('Invalid search field 🙃');
-  }
-
-  _handlePagination(
-    query: SelectQueryBuilder<TicketCategory>,
-    limit: number,
-    page: number,
-  ) {
-    const offset = (page - 1) * limit;
-    query.skip(offset).take(limit);
-  }
-
-  _handleOrderBy(
-    query: SelectQueryBuilder<TicketCategory>,
-    orderBy: keyof TicketCategory,
-  ) {
-    if (!orderBy) return;
-    const entityMetadata = query.expressionMap.mainAlias.metadata;
-    const column = entityMetadata.findColumnWithPropertyName(orderBy as string);
-    if (column) query.orderBy(`ticket_category.${column.databaseName}`);
-    else throw new BadRequestException('Invalid order by field 🙃');
-    //*second option
-    // const isFieldValid = Object.prototype.hasOwnProperty.call(
-    //   Object.getPrototypeOf(query),
-
-    //   orderBy,
-    // );
-
-    // if (isFieldValid) query.orderBy(`ticket_category.${orderBy}`);
-    // else throw new BadRequestException('Invalid order by field');
   }
 }

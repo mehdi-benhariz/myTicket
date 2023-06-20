@@ -5,16 +5,22 @@ export function _handleSearch<T>(
   query: SelectQueryBuilder<T>,
   searchField: keyof T,
   searchValue: string,
-  entity: any,
   tableName: string,
 ) {
-  const isFieldValid = Object.prototype.hasOwnProperty.call(
-    entity,
-    searchField,
+  if (!searchField || !searchField) return;
+
+  // const isFieldValid = Object.prototype.hasOwnProperty.call(
+  //   entity,
+  //   searchField,
+  // );
+
+  const entityMetadata = query.expressionMap.mainAlias.metadata;
+  const column = entityMetadata.findColumnWithPropertyName(
+    searchField as string,
   );
-  if (isFieldValid)
-    query.where(`${tableName}.${searchField.toString()} = :searchValue`, {
-      searchValue,
+  if (column)
+    query.where(`${tableName}.${searchField.toString()} LIKE :searchValue`, {
+      searchValue: `%${searchValue.toString()}%`,
     });
   else throw new BadRequestException('Invalid search field 🙃');
 }
@@ -38,7 +44,4 @@ export function _handleOrderBy<T>(
   const column = entityMetadata.findColumnWithPropertyName(orderBy as string);
   if (column) query.orderBy(`${tableName}.${column.databaseName}`);
   else throw new BadRequestException('Invalid order by field 🙃');
-  // const isFieldValid = Object.prototype.hasOwnProperty.call(entity, orderBy);
-  // if (isFieldValid) query.orderBy(`${tableName}.${orderBy.toString()}`);
-  // else throw new BadRequestException('Invalid order by field 🙃');
 }

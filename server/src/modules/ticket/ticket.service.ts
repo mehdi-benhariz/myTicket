@@ -3,14 +3,14 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { GenericService } from 'src/commons/genericService.interface';
 import { PaginationDto } from 'src/commons/paggination.dto';
+import { _handleSearch } from 'src/utils/service-helpers';
 import { EntityManager } from 'typeorm';
 import { EventService } from '../event/event.service';
 import { TicketCategoryService } from './../ticket-category/ticket-category.service';
-import { CreateTicketDto } from './dto/create-ticket.dto';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
 import { Ticket } from './entities/ticket.entity';
-import { GenericService } from 'src/commons/genericService.interface';
 
 @Injectable()
 export class TicketService implements GenericService<Ticket> {
@@ -39,14 +39,15 @@ export class TicketService implements GenericService<Ticket> {
   }
 
   async findAll(
-    search?: (ticket: Ticket) => boolean,
+    searchField?: keyof Ticket,
+    searchValue?: string,
     limit = 10,
     page = 1,
     orderBy?: keyof Ticket,
   ): Promise<PaginationDto<Ticket>> {
     const query = this.entityManager.createQueryBuilder(Ticket, 'ticket');
 
-    if (search) query.where(search);
+    _handleSearch<Ticket>(query, searchField, searchValue, 'ticket');
 
     const [data, totalCount] = await query
       .skip((page - 1) * limit)

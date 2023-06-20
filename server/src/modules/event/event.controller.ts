@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -17,6 +18,7 @@ import { RolesGuard } from 'src/guards/roles.guard';
 import { CustomParseIntPipe } from 'src/pipes/parseInt.pipe';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
+import { Event } from './entities/event.entity';
 import { EventService } from './event.service';
 
 @ApiTags('Event')
@@ -31,8 +33,20 @@ export class EventController {
   }
   @Roles(Role.Costumer, Role.Admin, Role.Manager)
   @Get()
-  findAll() {
-    return this.eventService.findAll();
+  findAll(
+    @Query('limit') limit = 10,
+    @Query('page') page = 1,
+    @Query('orderBy') orderBy?: keyof Event,
+    @Query('searchField') searchField?: keyof Event,
+    @Query('searchValue') searchValue?: string,
+  ) {
+    return this.eventService.findAll(
+      searchField,
+      searchValue,
+      limit,
+      page,
+      orderBy,
+    );
   }
   @Roles(Role.Costumer, Role.Admin, Role.Manager)
   @Get(':id')
