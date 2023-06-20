@@ -48,22 +48,17 @@ export class UserService implements GenericService<User> {
   ): Promise<ProfileUserDto[]> {
     const query = this.entityManager.createQueryBuilder(User, 'user');
 
-    // Apply search criteria if provided
     if (search) query.where(search);
     //select the fields we want to return
     //TODO: change this to use the ProfileUserDto
     query.select(['user.email', 'user.username', 'user.role']);
-    // Apply pagination
     const offset = (page - 1) * limit;
     query.skip(offset).take(limit);
 
-    // Apply sorting if orderBy parameter is provided
     if (orderBy) query.orderBy(`user.${orderBy}`);
 
-    // Execute the query and return the result
     const users = await query.getMany();
     return users;
-    // return plainToClass(ProfileUserDto, users);
   }
 
   async findOne(id: number, relations: string[] = []): Promise<User> {

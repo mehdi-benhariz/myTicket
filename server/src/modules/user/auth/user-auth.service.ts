@@ -20,7 +20,7 @@ export class UserAuthService {
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
   ) {}
-  //todo chan ge it later
+  //todo change it later
   async register(user: RegisterUserDto): Promise<any> {
     // Generate a hash of the user's password using Passport's password hashing
     const hashedPassword = await this.hashPassword(user.password);

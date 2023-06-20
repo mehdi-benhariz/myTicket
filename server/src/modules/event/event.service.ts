@@ -23,16 +23,12 @@ export class EventService implements GenericService<Event> {
   ): Promise<Event[]> {
     const query = this.entityManager.createQueryBuilder(Event, 'event');
 
-    if (search) {
-      query.where(search);
-    }
+    if (search) query.where(search);
 
     const offset = (page - 1) * limit;
     query.skip(offset).take(limit);
 
-    if (orderBy) {
-      query.orderBy(`event.${orderBy}`);
-    }
+    if (orderBy) query.orderBy(`event.${orderBy}`);
 
     return query.getMany();
   }

@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -14,7 +15,6 @@ import { Roles } from 'src/decorators/roles.decorator';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/guards/roles.guard';
 import { CustomParseIntPipe } from 'src/pipes/parseInt.pipe';
-import { SelectQueryBuilder } from 'typeorm';
 import { CreateTicketCategoryDto } from './dto/create-ticket-category.dto';
 import { UpdateTicketCategoryDto } from './dto/update-ticket-category.dto';
 import { TicketCategory } from './entities/ticket-category.entity';
@@ -22,7 +22,7 @@ import { TicketCategoryService } from './ticket-category.service';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @ApiTags('Ticket Category')
-@Controller(':eventId/ticket-category')
+@Controller('ticket-category')
 export class TicketCategoryController {
   constructor(private readonly ticketCategoryService: TicketCategoryService) {}
   @Roles(Role.Costumer, Role.Admin)
@@ -31,16 +31,20 @@ export class TicketCategoryController {
     return this.ticketCategoryService.create(createTicketCategoryDto);
   }
   @Get()
-  findAll(@Param('eventId', new CustomParseIntPipe()) eventId: number) {
-    const search = eventId
-      ? (queryBuilder: SelectQueryBuilder<TicketCategory>) => {
-          queryBuilder.where('ticket_category.eventId = :eventId', {
-            eventId,
-          });
-        }
-      : undefined;
-
-    return this.ticketCategoryService.findAll(search);
+  findAll(
+    @Query('page', new CustomParseIntPipe()) page?: number,
+    @Query('limit', new CustomParseIntPipe()) limit?: number,
+    @Query('orderBy') orderBy?: keyof TicketCategory,
+    @Query('searchField') searchField?: keyof TicketCategory,
+    @Query('searchValue') searchValue?: string,
+  ) {
+    return this.ticketCategoryService.findAll(
+      searchField,
+      searchValue,
+      limit,
+      page,
+      orderBy,
+    );
   }
 
   @Get(':id')

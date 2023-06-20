@@ -1,4 +1,3 @@
-import { PartialType } from '@nestjs/swagger';
 import { PaginationDto } from './paggination.dto';
 
 export interface GenericService<T> {
