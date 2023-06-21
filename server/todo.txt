@@ -4,4 +4,4 @@
 [X] add manger function ✅
 [X] change and add routes for category and tickets ✅
 [X] Switch to using claims instead of roles and permissions 
-[X] 
+[X] generate ticket when buying as pdf 

@@ -1,12 +1,9 @@
-import { IsDateString, IsString } from 'class-validator';
+import { PickType } from '@nestjs/swagger';
+import { EventValidator } from '../entities/event.validator';
 
-export class CreateEventDto {
-  @IsString()
-  name: string;
-  @IsString()
-  description: string;
-  @IsDateString()
-  date: Date;
-  @IsString()
-  place: string;
-}
+export class CreateEventDto extends PickType(EventValidator, [
+  'name',
+  'description',
+  'date',
+  'place',
+] as const) {}

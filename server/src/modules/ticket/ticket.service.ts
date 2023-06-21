@@ -1,13 +1,19 @@
 import {
   BadRequestException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
+import { saveAs } from 'file-saver';
+import { promises as fsPromises } from 'fs';
+import { join } from 'path';
 import { GenericService } from 'src/commons/genericService.interface';
 import { PaginationDto } from 'src/commons/paggination.dto';
+import { generatePDF } from 'src/utils/pdf-helper';
 import { _handleSearch } from 'src/utils/service-helpers';
 import { EntityManager } from 'typeorm';
 import { EventService } from '../event/event.service';
+import { User } from '../user/entities/user.entity';
 import { TicketCategoryService } from './../ticket-category/ticket-category.service';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
 import { Ticket } from './entities/ticket.entity';
@@ -94,5 +100,32 @@ export class TicketService implements GenericService<Ticket> {
     await this.findOne(id);
 
     await this.entityManager.delete(Ticket, id);
+  }
+
+  async generateTicket(ticketId: number, user: User) {
+    try {
+      const ticket = await this.findOne(ticketId);
+
+      const pdf = await generatePDF(ticket);
+
+      const filePath = join(
+        __dirname,
+        '..',
+        '..',
+        '..',
+        'public',
+        `ticket_${ticketId}.pdf`,
+      );
+
+      await fsPromises.writeFile(filePath, pdf);
+      const blob = new Blob([pdf], { type: 'application/pdf' });
+      saveAs(blob, `ticket_${ticketId}.pdf`);
+      return {
+        success: true,
+      };
+    } catch (error) {
+      console.error('Error generating ticket:', error);
+      throw new InternalServerErrorException('Failed to generate ticket');
+    }
   }
 }

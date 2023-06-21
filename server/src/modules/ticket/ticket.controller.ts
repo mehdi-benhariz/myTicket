@@ -8,6 +8,7 @@ import {
   Post,
   Query,
   Req,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -74,5 +75,17 @@ export class TicketController {
   @Delete(':ticketId')
   remove(@Param('ticketId', new CustomParseIntPipe()) ticketId: string) {
     return this.ticketService.remove(+ticketId);
+  }
+
+  @Get('generate-ticket/:ticketId')
+  generateTicket(
+    @Param('ticketId', new CustomParseIntPipe()) ticketId: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    const { user } = req.locals;
+
+    const pdf = this.ticketService.generateTicket(+ticketId, user);
+    return res.json();
   }
 }
